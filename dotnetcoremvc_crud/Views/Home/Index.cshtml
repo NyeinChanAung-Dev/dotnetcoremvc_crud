@@ -1,0 +1,186 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h6 class="display-4">Welcome</h6>
+    <p>Asp.net core mvc crud for beginner.</p>
+</div>
+
+<div class="pb-2">
+    <button class="btn btn-info btn-xs text-center rounded-pill ml-2" onclick="AddNewRecord()">Add new record</button>
+</div>
+<div id="customerList">
+
+</div>
+<!--begin::Add new record Modal-->
+<div class="modal fade" id="addnewModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title m-10" id="exampleModalLabel">Add new record</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <i class="text-danger">X</i>
+                </button>
+            </div>
+            <div id="formmodal" class="modal-body">
+
+            </div>
+        </div>
+    </div>
+</div>
+<!--end::Add new record Modal-->
+
+@section Scripts{
+    <script src="~/lib/sweet-alert/sweetalert.min.js"></script>
+
+    <script type="text/javascript">
+
+        $(function () {
+            ShowList('@Url.Action("_CustomerList", "Home")', '#customerList');
+        });
+
+        function ShowList(action, div) {
+            $.ajax({
+                cache: false,
+                url: action,
+                beforeSend: function () {
+                    $(div).empty().append('<div id="load_screen" style="text-align: center;"><div style="width:100%;height:100%" class="loader"><div class="loader-content"><div class="spinner-grow" style="background-color: skyblue;"></div></div></div></div>');
+                },
+                success: function (myData) {
+                    $(div).empty().append(myData);
+                },
+                complete: function () {
+                }
+            })
+        }
+
+        function AddNewRecord() {
+            BindModalForm("Add", 0);
+        }
+
+        function EidtItem(e) {
+            var id = $(e).attr('data-id');
+            BindModalForm("Edit", id);
+        }
+
+        function BindModalForm(FormType, ID) {
+            $.ajax({
+                cache: false,
+                url: '@Url.Action("_CustomerForm", "Home")',
+                data: { FormType: FormType, Id: ID },
+                beforeSend: function () {
+                },
+                success: function (Data) {
+                    $("#formmodal").empty().append(Data);
+                },
+                complete: function () {
+                    $("#addnewModal").modal('show');
+
+                    $("#CustomerForm").submit(function (e) {
+                        e.preventDefault();
+                        $.ajax({
+                            cache: false,
+                            url: '@Url.Action("UpSertCustomerForm", "Home")',
+                            type: "POST",
+                            data: $(this).serialize(),
+                            beforeSend: function () {
+                                $('#savebtn').empty().append('<span class="spinner-border"><i class="anticon anticon-loading"></i></span> Saving ...');
+                                $('#savebtn').prop("disabled", true);
+                            },
+                            success: function (myData) {
+                                if (myData == "Success") {
+                                    swal({
+                                        text: "Saved successfully.",
+                                        icon: "success"
+                                    });
+                                }
+                                else {
+                                    swal({
+                                        text: "Saving Fail.",
+                                        icon: "warning"
+                                    });
+                                }
+
+                                $("#addnewModal").modal('hide');
+                                ShowList('@Url.Action("_CustomerList", "Home")', '#customerList');
+                            },
+                            complete: function () {
+
+                            }
+                        });
+                    });
+                }
+            });
+        }
+
+        function DeleteItem(id) {
+            swal({
+                title: "Are you sure?",
+                text: "Once deleted, you will not be able to recover this imaginary file!",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            })
+                .then((willDelete) => {
+                    if (willDelete) {
+                        $.ajax({
+                        cache: false,
+                        url: '@Url.Action("_DeleteCustomer", "Home")',
+                        data: { Id: id },
+                        beforeSend: function () {
+
+                        },
+                        success: function (myData) {
+                            if (myData == "Success") {
+                                swal({
+                                    title: "Deleted.",
+                                    icon: "error",
+                                    confirmButtonColor: "#08C299"
+                                });
+                            }
+                            else {
+                                swal({
+                                    title: "Not deleted.",
+                                    confirmButtonColor: "#2196F3"
+                                });
+                            }
+                            ShowList('@Url.Action("_CustomerList", "Home")', '#customerList');
+                        },
+                        complete: function () {
+                        }
+                    })
+                    }
+                });
+        }
+
+        function Validate() {
+            var Name = $('#Name').val();
+            var Country = $('#Country').val();
+            var City = $('#City').val();
+            var PhoneNo = $('#PhoneNo').val();
+
+            if (Name == null || Name == "") {
+                $('#NameError').empty().append("* Name is required *");
+            } else {
+                $('#NameError').empty();
+            }
+            if (Country == null || Country == "") {
+                $('#CountryError').empty().append("* Country is required *");
+            } else {
+                $('#CountryError').empty();
+            }
+            if (City == null || City == "") {
+                $('#CityError').empty().append("* City is required *");
+            } else {
+                $('#CityError').empty();
+            }
+            if (PhoneNo == null || PhoneNo == "") {
+                $('#PhoneNoError').empty().append("* Phone no is required *");
+            } else {
+                $('#PhoneNoError').empty();
+            }
+        }
+
+    </script>
+}

@@ -1,0 +1,43 @@
+﻿@model dotnetcoremvc_crud.Model.Customer
+
+<form method="post" asp-controller="Home" asp-action="UpSertCustomerForm" id="CustomerForm" enctype="multipart/form-data">
+    <div class="form-group row">
+        <label for="Name" class="col-sm-4 col-form-label">Name</label>
+        <div class="col-sm-8">
+            <input asp-for="Name" type="text" class="form-control" required />
+            <p id="NameError" class="text-danger mt-10"></p>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="Country" class="col-sm-4 col-form-label">Country</label>
+        <div class="col-sm-8">
+            <input asp-for="Country" type="text" class="form-control" required />
+            <p id="CountryError" class="text-danger mt-10"></p>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="City" class="col-sm-4 col-form-label">City</label>
+        <div class="col-sm-8">
+            <input asp-for="City" type="text" class="form-control" required />
+            <p id="CityError" class="text-danger mt-10"></p>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="PhoneNo" class="col-sm-4 col-form-label">Phone no</label>
+        <div class="col-sm-8">
+            <input asp-for="PhoneNo" type="text" class="form-control" required />
+            <p id="PhoneNoError" class="text-danger mt-10"></p>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-info rounded-pill" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-success rounded-pill" id="savebtn" onclick="Validate()">Submit</button>
+    </div>
+
+    <div>
+        @*Hidden Fields*@
+        <input type="hidden" asp-for="Id" />
+    </div>
+
+</form>
